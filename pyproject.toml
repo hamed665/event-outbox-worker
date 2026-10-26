@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "event-outbox-worker"
+version = "0.1.0"
+description = "SQLite transactional outbox with leases, retries and dead-letter recovery."
+requires-python = ">=3.11"
+authors = [{name = "Hamed Minaei"}]
+license = {text = "MIT"}
+dependencies = []
+
+[tool.setuptools.packages.find]
+include = ["relaybox*"]

@@ -1,0 +1,8 @@
+$ python -m relaybox
+{
+  "delivery_attempts": 2,
+  "states": {
+    "delivered": 1
+  }
+}
+
