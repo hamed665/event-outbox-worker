@@ -1,4 +1,4 @@
-# RelayBox
+# RelayBox — Transactional Outbox Worker
 
 **SQLite transactional outbox with leases, retries and dead-letter recovery.**
 
@@ -7,10 +7,19 @@
 
 Commit a business update and its delivery event together, then recover from worker crashes and downstream failures.
 
-An original, runnable reference implementation by Hamed Minaei. Uses only the
-Python standard library. No API key, paid account or network access is needed
-for the included demos and tests. Version 0.1.0 focuses on the core engineering
-contract rather than a hosted production service.
+**Maintainer:** [Hamed Minaei](https://github.com/hamed665) · **Runtime:** Python 3.11+ · **Edition:** local library and CLI, v0.1.0.
+
+The included demos and tests use only the Python standard library and synthetic data. No package installation, API key or network connection is required.
+
+## Use case and behavior
+
+Services that must persist business changes and delivery intent in one transaction.
+
+| Stage | Contract |
+| --- | --- |
+| Write | Commit the entity update and immutable tenant/event ID together. |
+| Claim | A worker obtains a bounded lease; the lease token fences stale acknowledgments. |
+| Complete or retry | The host performs the external effect, then acknowledges; failures can retry or reach dead-letter state. |
 
 ## Capabilities
 
@@ -32,6 +41,12 @@ python -m unittest discover -s tests -v
 
 Optional library installation: `python -m pip install .`
 
+## Walkthrough
+
+Inspect the demo state counters, then follow the retry and dead-letter cases in the tests. A successful acknowledgment records local completion; it does not prove exactly-once execution in a downstream service.
+
+See [the captured demo output](examples/demo-output.txt) for the bundled scenario.
+
 ## Use as a library
 
 ```python
@@ -52,8 +67,7 @@ for transaction boundaries and deployment considerations.
 
 ## Verification
 
-The test suite exercises behavioral guarantees, error paths and isolation.
-SQLite projects also test competing connections with independent workers.
+The [behavioral tests](tests/) cover the decision rules and failure paths described above. The [CI workflow](.github/workflows/ci.yml) defines the repeatable verification matrix.
 GitHub Actions runs the suite on Python 3.11, 3.12 and 3.13.
 All fixtures are synthetic. Demo output is captured in
 [examples/demo-output.txt](examples/demo-output.txt).
@@ -69,6 +83,10 @@ At-least-once processing, never exactly-once delivery. A crash after an external
 - `examples/`: synthetic inputs and captured demo output
 - `docs/`: design decisions and boundaries
 - `.github/workflows/ci.yml`: repeatable verification
+
+## Security and integration
+
+Read [SECURITY.md](SECURITY.md) before adapting this component to application data. [Architecture notes](docs/architecture.md) explain the integration boundary. Report reproducible issues through [GitHub Issues](https://github.com/hamed665/event-outbox-worker/issues), with sanitized inputs and the command used.
 
 ## License
 
